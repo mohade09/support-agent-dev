@@ -38,6 +38,3 @@ node_modules/
 
 # UI dist folder
 src/elegant_whale/__dist__/
-
-# bundle build output (rebuild via `apx build`)
-.build/

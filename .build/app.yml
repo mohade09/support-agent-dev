@@ -1,0 +1,6 @@
+command: ["uvicorn", "elegant_whale.backend.app:app", "--workers", "2"]
+
+env:
+  - name: ELEGANT_WHALE_SERVING_ENDPOINT
+    valueFrom: "serving-endpoint"
+
