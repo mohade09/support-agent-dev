@@ -1,0 +1,43 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# version file
+src/elegant_whale/_version.py
+
+# metadata file
+src/elegant_whale/_metadata.py
+
+# build files
+dist
+
+# js-related
+node_modules/
+.tanstack
+
+# env files
+.env
+.env.local
+.env.*
+
+# mac
+.DS_Store
+
+# DABs
+.databricks
+
+# apx
+.apx/
+
+# UI dist folder
+src/elegant_whale/__dist__/
+
+# bundle build output (rebuild via `apx build`)
+.build/

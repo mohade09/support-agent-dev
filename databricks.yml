@@ -1,0 +1,60 @@
+bundle:
+  name: support-agent-deb
+
+sync:
+  include:
+    - .build
+
+# Build is handled by deploy.sh (apx build runs on the laptop and the
+# resulting .build/ is uploaded). Do NOT define `artifacts.<x>.build` here
+# or `bundle deploy` will try to rebuild on every host — which fails in a
+# Databricks workspace shell that doesn't have apx on PATH.
+
+resources:
+  apps:
+    support-agent-deb-app:
+      name: "support-agent-deb"
+      description: "Voltway support workspace (agent + supervisor)"
+      source_code_path: ./.build
+
+      resources:
+        - name: "serving-endpoint"
+          serving_endpoint:
+            name: "mas-c15b1e56-endpoint"
+            permission: "CAN_QUERY"
+
+        - name: "sql-warehouse"
+          sql_warehouse:
+            id: "44ee24c6c1a1d03f"
+            permission: "CAN_USE"
+
+        - name: "genie-space"
+          genie_space:
+            name: "Support Agent Genie"
+            space_id: "01f13d0059df1a9ba8e561d842a63a1f"
+            permission: "CAN_RUN"
+
+        - name: "genie-space-returns"
+          genie_space:
+            name: "Return Policy Analytics"
+            space_id: "01f13d655d891aeda72c218a6dfa5570"
+            permission: "CAN_RUN"
+
+        # knowledge-assistant (ka-19637755-endpoint) requires MANAGE permission
+        # on the endpoint to attach. Re-add once granted.
+
+        # UC data grants for the app's service principal are managed at
+        # the schema level via setup-grants.sql (bundle uc_securable does
+        # not support SCHEMA scope). Run setup-grants.sql once after
+        # deploy to grant USE_CATALOG / USE_SCHEMA / SELECT on
+        # debadm.shopflow_demo and debadm.ecom_gold.
+
+
+
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://fe-vm-vdm-serverless-iwnbow.cloud.databricks.com
