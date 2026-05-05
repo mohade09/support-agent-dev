@@ -3,4 +3,15 @@ command: ["uvicorn", "elegant_whale.backend.app:app", "--workers", "2"]
 env:
   - name: ELEGANT_WHALE_SERVING_ENDPOINT
     valueFrom: "serving-endpoint"
+  # auth_mode: "auto" (default) | "obo" | "app_sp"
+  #   auto   — OBO when X-Forwarded-Access-Token is present, app SP otherwise
+  #   obo    — strict OBO; reject requests without the user token
+  #   app_sp — always use the app's service principal
+  - name: ELEGANT_WHALE_AUTH_MODE
+    value: "auto"
 
+# OAuth scopes requested at SSO time so the user's token can be forwarded
+# (X-Forwarded-Access-Token) when auth_mode is obo or auto.
+user_authorization:
+  scopes:
+    - serving.serving-endpoints
