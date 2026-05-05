@@ -106,23 +106,29 @@ Use a cluster's **Web Terminal** (Compute → cluster → Apps → Web Terminal)
 
 ### One-time setup from the laptop — push source + build
 
+You run **all three commands** every time you want the workspace folder to reflect a fresh local build:
+
 ```bash
-# 1. Build locally so .build/ is fresh
+# 1. Build the frontend + Python wheel locally
 apx build
 
-# 2. Sync source files to the workspace (note: --exclude .build/**;
-#    databricks sync skips dot-dirs anyway, so .build/ goes via step 3)
+# 2. Sync source code to the workspace
+#    (databricks sync skips dot-prefixed dirs by default, so .build/
+#    is uploaded separately in step 3)
 databricks sync . /Users/<you>@databricks.com/support-agent-deb-source \
   --exclude "node_modules/**" --exclude ".venv/**" --exclude ".build/**" \
   --exclude ".databricks/**" --exclude ".tanstack/**" --exclude "__pycache__/**" \
   --exclude "*.pyc" --exclude ".env" \
   -p <your-profile>
 
-# 3. Upload .build/ separately (databricks sync skips dot-prefixed dirs)
+# 3. Upload .build/ (the deploy target) — required for BUILD=false
+#    runs from a workspace shell, since the workspace can't run apx build.
 databricks workspace import-dir .build \
   /Users/<you>@databricks.com/support-agent-deb-source/.build \
   --overwrite -p <your-profile>
 ```
+
+After steps 1–3, the workspace folder has both the source tree and a fresh `.build/` ready to deploy.
 
 ### Deploy from the workspace shell
 
