@@ -5,7 +5,7 @@ Two-pane support tool for an electronics e-commerce platform:
 - **`/agent`** — live-call workspace for a support agent (call panel, customer profile, order details, transcript, AI assistant rail).
 - **`/supervisor`** — floor-supervisor view with **Live floor** (12-agent grid + KPIs) and **Performance** (last-month dashboard) tabs, plus the same AI assistant rail.
 
-Both AI assistant rails stream from `/api/chat` → Mosaic AI Agent Bricks multi-agent supervisor (`mas-c15b1e56-endpoint`).
+Both AI assistant rails stream from `/api/chat` → a Mosaic AI Agent Bricks multi-agent supervisor endpoint (configured via `databricks.yml`).
 
 ## Tech stack
 
@@ -140,7 +140,7 @@ apx build
 # 2. Sync source code to the workspace
 #    (databricks sync skips dot-prefixed dirs by default, so .build/
 #    is uploaded separately in step 3)
-databricks sync . /Users/<you>@databricks.com/support-agent-deb-source \
+databricks sync . /Users/<you>@databricks.com/support-agent-source \
   --exclude "node_modules/**" --exclude ".venv/**" --exclude ".build/**" \
   --exclude ".databricks/**" --exclude ".tanstack/**" --exclude "__pycache__/**" \
   --exclude "*.pyc" --exclude ".env" \
@@ -149,7 +149,7 @@ databricks sync . /Users/<you>@databricks.com/support-agent-deb-source \
 # 3. Upload .build/ (the deploy target) — required for BUILD=false
 #    runs from a workspace shell, since the workspace can't run apx build.
 databricks workspace import-dir .build \
-  /Users/<you>@databricks.com/support-agent-deb-source/.build \
+  /Users/<you>@databricks.com/support-agent-source/.build \
   --overwrite -p <your-profile>
 ```
 
@@ -159,8 +159,8 @@ After steps 1–3, the workspace folder has both the source tree and a fresh `.b
 
 ```bash
 # Copy to a writable filesystem (the /Workspace mount may be read-only)
-cp -r /Workspace/Users/<you>@databricks.com/support-agent-deb-source /tmp/support-agent-deb
-cd /tmp/support-agent-deb
+cp -r /Workspace/Users/<you>@databricks.com/support-agent-source /tmp/support-agent
+cd /tmp/support-agent
 chmod +x deploy.sh
 
 ./deploy.sh                # auto-detects BUILD=false, uses .build/, ambient auth
@@ -218,11 +218,11 @@ src/elegant_whale/
 
 ## Resources attached to the app
 
-Declared in `databricks.yml` under `resources.apps.support-agent-deb-app.resources`:
+Declared in `databricks.yml` under `resources.apps.<app-key>.resources` (replace placeholders with your own IDs):
 
-- `serving-endpoint` — `mas-c15b1e56-endpoint` (CAN_QUERY)
-- `sql-warehouse` — `44ee24c6c1a1d03f` (CAN_USE)
-- `genie-space` — Support Agent Genie (CAN_RUN)
-- `genie-space-returns` — Return Policy Analytics (CAN_RUN)
+- `serving-endpoint` — Mosaic AI Agent Bricks endpoint name (CAN_QUERY)
+- `sql-warehouse` — SQL warehouse ID (CAN_USE)
+- `genie-space` — Support Agent Genie space ID (CAN_RUN)
+- `genie-space-returns` — Return Policy Analytics Genie space ID (CAN_RUN)
 
 UC table grants are managed via `setup-grants.sql` (bundle `uc_securable` doesn't support schema scope).
