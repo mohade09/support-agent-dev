@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 TARGET="${TARGET:-dev}"
-APP_KEY="support-agent-deb-app"
+APP_KEY="support-agent-ui-app"
 
 # BUILD: should this run `apx build` to produce .build/?
 #   "auto" (default) — true on laptop, false in a Databricks workspace shell
@@ -105,7 +105,7 @@ databricks bundle run "$APP_KEY" -t "$TARGET" "${PROFILE_ARGS[@]}"
 
 echo "==> Done. Tail logs with:"
 if [[ -n "$PROFILE" ]]; then
-  echo "    databricks apps logs support-agent-deb -p $PROFILE"
+  echo "    databricks apps logs support-agent-ui -p $PROFILE"
 else
-  echo "    databricks apps logs support-agent-deb"
+  echo "    databricks apps logs support-agent-ui"
 fi

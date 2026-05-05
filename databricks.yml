@@ -1,5 +1,5 @@
 bundle:
-  name: support-agent-deb
+  name: support-agent-ui
 
 sync:
   include:
@@ -12,8 +12,8 @@ sync:
 
 resources:
   apps:
-    support-agent-deb-app:
-      name: "support-agent-deb"
+    support-agent-ui-app:
+      name: "support-agent-ui"
       description: "Voltway support workspace (agent + supervisor)"
       source_code_path: ./.build
 
