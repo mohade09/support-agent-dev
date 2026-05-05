@@ -1,1 +1,1 @@
-elegant_whale-0.0.0+20260505095315-py3-none-any.whl
+elegant_whale-0.0.0+20260505140623-py3-none-any.whl
