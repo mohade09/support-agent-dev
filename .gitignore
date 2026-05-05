@@ -33,6 +33,7 @@ node_modules/
 # Claude Code (project-local; do not publish)
 CLAUDE.md
 .claude/
+.mcp.json
 
 # DABs
 .databricks

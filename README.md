@@ -175,18 +175,23 @@ TARGET=prod ./deploy.sh    # override target
 
 ### Post-deploy data grants (one-time)
 
-The app's service principal needs SELECT on the underlying data. Bundle `uc_securable` only supports table-level grants, so schema-wide grants live in `setup-grants.sql`:
+The app's service principal needs `SELECT` on the underlying data. Bundle `uc_securable` only supports table-level grants, so schema-wide grants live in `setup-grants.sql`:
 
 ```bash
 # 1. Find the app SP applicationId
 databricks service-principals list -o json -p <your-profile> | \
-  python3 -c "import sys,json; [print(s['applicationId'], s['displayName']) for s in json.load(sys.stdin) if 'support-agent-deb' in s.get('displayName','')]"
+  python3 -c "import sys,json; [print(s['applicationId'], s['displayName']) for s in json.load(sys.stdin) if 'support-agent' in s.get('displayName','')]"
 
-# 2. Edit setup-grants.sql, replace <APP_SP_APPLICATION_ID> with the UUID from step 1
+# 2. Edit setup-grants.sql:
+#      - replace <APP_SP_APPLICATION_ID> with the UUID from step 1
+#      - replace <YOUR_CATALOG>.<YOUR_SCHEMA> with your actual catalog/schema
 # 3. Paste setup-grants.sql into the Databricks SQL editor → Run
 ```
 
-This grants `USE_CATALOG` on `debadm` and `USE_SCHEMA` + `SELECT` on `debadm.shopflow_demo` and `debadm.ecom_gold`.
+What it grants to the app SP:
+
+- `USE_CATALOG` on your catalog
+- `USE_SCHEMA` + `SELECT` on the schema you fill in (covers all tables in that schema, present and future)
 
 ## Project layout
 
