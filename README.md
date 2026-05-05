@@ -104,6 +104,31 @@ What it does (in order): prereq install → auth check → `apx build` → bundl
 
 Use a cluster's **Web Terminal** (Compute → cluster → Apps → Web Terminal) or a notebook `%sh` cell.
 
+You have two ways to get the code into the workspace — pick whichever fits your situation:
+
+### Option A — clone the GitHub repo directly into the workspace (recommended)
+
+If your workspace can reach github.com, this is the fastest setup. No laptop sync needed.
+
+1. In the Databricks workspace UI, go to **Workspace → your user folder → ⊕ Add → Git folder**.
+2. Paste the repo URL: `https://github.com/mohade09/support-agent-dev`.
+3. Click **Create Git folder**. The repo lands at `/Workspace/Users/<you>@databricks.com/support-agent-dev`.
+
+Open a cluster's **Web Terminal** and run:
+
+```bash
+cp -r /Workspace/Users/<you>@databricks.com/support-agent-dev /tmp/support-agent-dev
+cd /tmp/support-agent-dev
+chmod +x deploy.sh
+./deploy.sh                # auto-detects BUILD=false, uses the committed .build/
+```
+
+The repo already includes the latest committed `.build/` artifacts, so the workspace shell doesn't need `apx`/`uv`/`bun` — only `databricks` (auto-installed by `deploy.sh` if missing).
+
+To pull the latest commits later: in the workspace UI, open the Git folder and click **Pull**, then re-run `cp -r ... && ./deploy.sh`.
+
+### Option B — sync from your laptop (if the workspace can't reach GitHub)
+
 ### One-time setup from the laptop — push source + build
 
 You run **all three commands** every time you want the workspace folder to reflect a fresh local build:
