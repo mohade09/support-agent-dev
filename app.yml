@@ -12,6 +12,16 @@ env:
 
 # OAuth scopes requested at SSO time so the user's token can be forwarded
 # (X-Forwarded-Access-Token) when auth_mode is obo or auto.
+#
+# Only `serving.serving-endpoints` is required when the Mosaic AI Agent Bricks
+# endpoint uses EMBEDDED_CREDENTIALS for its attached resources (the default).
+#
+# The `dashboards.genie` and `sql` scopes are only needed if the agent's
+# Genie spaces / SQL warehouse / UC tables are configured for user
+# pass-through. In that case each end user must also be granted CAN_RUN on
+# the Genie spaces and USE_CATALOG / USE_SCHEMA / SELECT on the schema.
 user_authorization:
   scopes:
     - serving.serving-endpoints
+    - dashboards.genie
+    - sql
