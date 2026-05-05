@@ -30,6 +30,10 @@ node_modules/
 # mac
 .DS_Store
 
+# Claude Code (project-local; do not publish)
+CLAUDE.md
+.claude/
+
 # DABs
 .databricks
 

@@ -18,26 +18,31 @@ resources:
       source_code_path: ./.build
 
       resources:
+        # Replace with your Mosaic AI Agent Bricks endpoint name.
         - name: "serving-endpoint"
           serving_endpoint:
-            name: "mas-c15b1e56-endpoint"
+            name: "<YOUR_AGENT_ENDPOINT_NAME>"
             permission: "CAN_QUERY"
 
+        # Replace with your SQL warehouse ID
+        # (databricks warehouses list -o json | jq '.[].id').
         - name: "sql-warehouse"
           sql_warehouse:
-            id: "44ee24c6c1a1d03f"
+            id: "<YOUR_SQL_WAREHOUSE_ID>"
             permission: "CAN_USE"
 
+        # Replace with your Genie Room ID (from /genie/rooms/<id> URL).
         - name: "genie-space"
           genie_space:
             name: "Support Agent Genie"
-            space_id: "01f13d0059df1a9ba8e561d842a63a1f"
+            space_id: "<YOUR_GENIE_SPACE_ID>"
             permission: "CAN_RUN"
 
+        # Replace with the Genie Room ID for return-policy analytics.
         - name: "genie-space-returns"
           genie_space:
             name: "Return Policy Analytics"
-            space_id: "01f13d655d891aeda72c218a6dfa5570"
+            space_id: "<YOUR_RETURNS_GENIE_SPACE_ID>"
             permission: "CAN_RUN"
 
         # knowledge-assistant (ka-19637755-endpoint) requires MANAGE permission
@@ -57,4 +62,4 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://fe-vm-vdm-serverless-iwnbow.cloud.databricks.com
+      host: https://<your-workspace>.cloud.databricks.com

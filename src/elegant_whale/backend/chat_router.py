@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import AsyncGenerator
 
 import httpx
+from databricks.sdk import WorkspaceClient
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from .core import Dependencies, create_router
+from .core._config import logger
 
 router = create_router()
 
@@ -57,10 +59,36 @@ async def _stream_agent_response(
 async def chat(
     request: ChatRequest,
     ws: Dependencies.Client,
+    headers_dep: Dependencies.Headers,
     config: Dependencies.Config,
 ):
-    host = ws.config.host.rstrip("/")
-    auth_headers = ws.config.authenticate()
+    obo_token = headers_dep.token.get_secret_value() if headers_dep.token else None
+
+    if config.auth_mode == "obo":
+        if not obo_token:
+            raise HTTPException(
+                status_code=401,
+                detail=(
+                    "auth_mode=obo requires the X-Forwarded-Access-Token header. "
+                    "It is set automatically on deployed Databricks Apps for SSO users."
+                ),
+            )
+        client = WorkspaceClient(token=obo_token, auth_type="pat")
+        mode_used = "obo"
+    elif config.auth_mode == "app_sp":
+        client = ws
+        mode_used = "app_sp"
+    else:  # auto
+        if obo_token:
+            client = WorkspaceClient(token=obo_token, auth_type="pat")
+            mode_used = "obo"
+        else:
+            client = ws
+            mode_used = "app_sp"
+
+    logger.info(f"chat: auth_mode={config.auth_mode} resolved={mode_used}")
+    host = client.config.host.rstrip("/")
+    auth_headers = client.config.authenticate()
 
     messages = [{"role": m.role, "content": m.content} for m in request.messages]
 

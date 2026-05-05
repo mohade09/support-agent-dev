@@ -61,7 +61,15 @@ export interface ValidationError {
 export interface VersionOut {
     version: string;
 }
-export const chat = async (data: ChatRequest, options?: RequestInit): Promise<{
+export interface ChatParams {
+    "X-Forwarded-Host"?: string | null;
+    "X-Forwarded-Preferred-Username"?: string | null;
+    "X-Forwarded-User"?: string | null;
+    "X-Forwarded-Email"?: string | null;
+    "X-Request-Id"?: string | null;
+    "X-Forwarded-Access-Token"?: string | null;
+}
+export const chat = async (data: ChatRequest, params?: ChatParams, options?: RequestInit): Promise<{
     data: unknown;
 }> =>{
     const res = await fetch("/api/chat", {
@@ -69,6 +77,24 @@ export const chat = async (data: ChatRequest, options?: RequestInit): Promise<{
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            ...(params?.["X-Forwarded-Host"] != null && {
+                "X-Forwarded-Host": params["X-Forwarded-Host"]
+            }),
+            ...(params?.["X-Forwarded-Preferred-Username"] != null && {
+                "X-Forwarded-Preferred-Username": params["X-Forwarded-Preferred-Username"]
+            }),
+            ...(params?.["X-Forwarded-User"] != null && {
+                "X-Forwarded-User": params["X-Forwarded-User"]
+            }),
+            ...(params?.["X-Forwarded-Email"] != null && {
+                "X-Forwarded-Email": params["X-Forwarded-Email"]
+            }),
+            ...(params?.["X-Request-Id"] != null && {
+                "X-Request-Id": params["X-Request-Id"]
+            }),
+            ...(params?.["X-Forwarded-Access-Token"] != null && {
+                "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"]
+            }),
             ...options?.headers
         },
         body: JSON.stringify(data)
@@ -90,10 +116,13 @@ export const chat = async (data: ChatRequest, options?: RequestInit): Promise<{
 export function useChat(options?: {
     mutation?: UseMutationOptions<{
         data: unknown;
-    }, ApiError, ChatRequest>;
+    }, ApiError, {
+        params: ChatParams;
+        data: ChatRequest;
+    }>;
 }) {
     return useMutation({
-        mutationFn: (data)=>chat(data),
+        mutationFn: (vars)=>chat(vars.data, vars.params),
         ...options?.mutation
     });
 }
