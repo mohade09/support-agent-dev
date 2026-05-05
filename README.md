@@ -15,6 +15,39 @@ Both AI assistant rails stream from `/api/chat` → Mosaic AI Agent Bricks multi
 
 ## Run locally (laptop)
 
+### Install apx
+
+The dev loop is driven by [apx](https://github.com/databricks-solutions/apx). One-line install:
+
+```bash
+curl -fsSL https://databricks-solutions.github.io/apx/install.sh | sh
+```
+
+The installer drops the binary in `~/.local/bin/apx`. Add it to your `PATH` if it isn't already:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"   # add to ~/.zshrc or ~/.bashrc
+```
+
+Verify:
+
+```bash
+apx --version
+```
+
+apx bootstraps `uv` (Python) and `bun` (JS) the first time you run a command that needs them — no extra installs required for the dev loop.
+
+You also need the Databricks CLI for the deploy step:
+
+```bash
+# macOS
+brew tap databricks/tap && brew install databricks
+# any platform
+curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+```
+
+(`./deploy.sh` will install whatever is missing on first run, so this is only needed if you want to run `databricks` commands directly.)
+
 ### Dev mode (hot reload)
 
 ```bash
