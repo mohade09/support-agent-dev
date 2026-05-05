@@ -17,6 +17,15 @@ resources:
       description: "Voltway support workspace (agent + supervisor)"
       source_code_path: ./.build
 
+      # OAuth scopes requested at SSO time so the user's token can be
+      # forwarded (X-Forwarded-Access-Token) when auth_mode is obo or auto.
+      # These drive the SSO consent dialog and determine what the
+      # user-on-behalf-of token can access.
+      user_api_scopes:
+        - serving.serving-endpoints
+        - dashboards.genie
+        - sql
+
       resources:
         # Replace with your Mosaic AI Agent Bricks endpoint name.
         - name: "serving-endpoint"
@@ -24,26 +33,34 @@ resources:
             name: "<YOUR_AGENT_ENDPOINT_NAME>"
             permission: "CAN_QUERY"
 
-        # Replace with your SQL warehouse ID
-        # (databricks warehouses list -o json | jq '.[].id').
-        - name: "sql-warehouse"
-          sql_warehouse:
-            id: "<YOUR_SQL_WAREHOUSE_ID>"
-            permission: "CAN_USE"
-
-        # Replace with your Genie Room ID (from /genie/rooms/<id> URL).
-        - name: "genie-space"
-          genie_space:
-            name: "Support Agent Genie"
-            space_id: "<YOUR_GENIE_SPACE_ID>"
-            permission: "CAN_RUN"
-
-        # Replace with the Genie Room ID for return-policy analytics.
-        - name: "genie-space-returns"
-          genie_space:
-            name: "Return Policy Analytics"
-            space_id: "<YOUR_RETURNS_GENIE_SPACE_ID>"
-            permission: "CAN_RUN"
+        # The resources below (sql-warehouse + genie-space) attach with the
+        # app's service principal. They are only required when running in
+        # auth_mode=app_sp — i.e. the backend calls Genie / SQL warehouses
+        # directly using the app SP. For OBO (default), these are unused
+        # because the agent endpoint accesses Genie + warehouses via its
+        # own EMBEDDED_CREDENTIALS, not the app SP. Uncomment if you switch
+        # to auth_mode=app_sp.
+        #
+        # # Replace with your SQL warehouse ID
+        # # (databricks warehouses list -o json | jq '.[].id').
+        # - name: "sql-warehouse"
+        #   sql_warehouse:
+        #     id: "<YOUR_SQL_WAREHOUSE_ID>"
+        #     permission: "CAN_USE"
+        #
+        # # Replace with your Genie Room ID (from /genie/rooms/<id> URL).
+        # - name: "genie-space"
+        #   genie_space:
+        #     name: "Support Agent Genie"
+        #     space_id: "<YOUR_GENIE_SPACE_ID>"
+        #     permission: "CAN_RUN"
+        #
+        # # Replace with the Genie Room ID for return-policy analytics.
+        # - name: "genie-space-returns"
+        #   genie_space:
+        #     name: "Return Policy Analytics"
+        #     space_id: "<YOUR_RETURNS_GENIE_SPACE_ID>"
+        #     permission: "CAN_RUN"
 
         # knowledge-assistant (ka-19637755-endpoint) requires MANAGE permission
         # on the endpoint to attach. Re-add once granted.
